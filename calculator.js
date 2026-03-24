@@ -681,7 +681,7 @@ for (let i = 1; i <= pageCount; i++) {
     doc.setFont("helvetica", "normal");
    
     const copyrightSentences = [
-        "© 2025 V. Murat YAVUZ.",
+        "© 2026 V. Murat YAVUZ.",
         "Bu rapor, VM tarafindan gelistirilen Cek Vade Hesaplama Programi kullanilarak olusturulmustur. Tum haklari saklidir.",
         "Bu belge sadece bilgi amaclidir, mali veya hukuki bir deger tasimaz. Izinsiz cogaltilamaz, dagitilamaz ve degistirilemez.",
     ];
