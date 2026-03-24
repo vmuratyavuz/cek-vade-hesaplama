@@ -1,0 +1,19 @@
+@media (min-width: 768px) {
+    #leftPanel, #rightPanel {
+        height: var(--panel-height, auto);
+    }
+    #checkTableWrapper {
+        overflow-y: auto;
+    }
+}
+
+
+
+.about-note .flex {
+    justify-content: center;
+}
+
+.about-note {
+    text-align: center;
+    padding-bottom: 3rem;
+}

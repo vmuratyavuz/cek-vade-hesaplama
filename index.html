@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Çek Vade Hesaplayıcı</title>
+    <title>Çek Vade Hesaplama</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 p-4">
     <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Sol Panel - Giriş Formu -->
-            <div class="bg-white p-6 rounded-lg shadow">
+                <div id="leftPanel" class="bg-white p-6 rounded-lg shadow">
                 <h2 class="text-xl font-bold mb-4 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -58,14 +55,14 @@
             </div>
 
             <!-- Sağ Panel - Çek Listesi -->
-            <div class="bg-white p-6 rounded-lg shadow h-full">
+                <div id="rightPanel" class="bg-white p-6 rounded-lg shadow flex flex-col">
                 <h2 class="text-xl font-bold mb-4 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     Eklenen Çekler
                 </h2>
-                <div style="max-height: 396px; overflow-y: auto;">
+                    <div id="checkTableWrapper" class="overflow-y-auto" style="max-height: 330px;">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
@@ -81,6 +78,12 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- PDF butonu buraya -->
+            <div class="mt-auto pt-4">
+                <button id="pdfButton" onclick="downloadPDF()" class="w-full bg-red-600 text-white p-2 rounded hover:bg-red-700 hidden">
+                    PDF İndir
+                </button>
+            </div>
             </div>
         </div>
 
@@ -90,13 +93,180 @@
             <div id="resultsSummary">
                 <!-- JavaScript ile doldurulacak -->
             </div>
-            <div class="mt-4">
-                <button id="pdfButton" onclick="downloadPDF()" class="bg-red-600 text-white p-2 rounded hover:bg-red-700 hidden">
-                    PDF İndir111
-                </button>
+           
+        </div>
+
+         <!-- Kullanım Kılavuzu ve Gizlilik -->
+        <div class="mt-8 space-y-6">
+
+            <!-- Nasıl Kullanılır -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Nasıl Kullanılır?
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">1</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Çek tarihini girin</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Çekin üzerindeki vade tarihini tarih alanına girin.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">2</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Tutarı girin</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Çek tutarını yazın. Binlik ayraç ve virgüllü gösterim otomatik olarak biçimlendirilir (ör: 12.500,75).</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">3</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Çek türünü seçin</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Kendi yazdığınız çekler için <span class="font-medium text-gray-700">Firma Çeki</span>, başkasından aldığınız çekler için <span class="font-medium text-gray-700">Ciro Edilen Çek</span> seçeneğini kullanın. <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono">+</kbd> tuşuyla hızlıca geçiş yapabilirsiniz.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">4</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Çek Ekle'ye tıklayın</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Tutar alanındayken <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs font-mono">Enter</kbd> tuşuna basarak da ekleyebilirsiniz. İstediğiniz kadar çek ekleyin; liste tarihe göre otomatik sıralanır.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">5</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Hesaplama tarihini belirleyin</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Varsayılan olarak bugünün tarihi seçilidir. Farklı bir tarihle karşılaştırma yapmak istiyorsanız değiştirebilirsiniz; sonuçlar anında güncellenir.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">6</div>
+                        <div>
+                            <p class="font-semibold text-sm text-gray-800">Sonuçları inceleyin veya PDF indirin</p>
+                            <p class="text-sm text-gray-500 mt-0.5">Ağırlıklı ortalama vade tarihi ve toplam tutar hesaplanır. Tüm çekleri içeren ayrıntılı raporu PDF olarak indirebilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Özellikler ve Gizlilik yan yana -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Özellikler -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Özellikler
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">Ağırlıklı ortalama vade</p>
+                                <p class="text-sm text-gray-500">Her çekin tutarı ve vadesi dikkate alınarak matematiksel olarak doğru ortalama hesaplanır.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">Düzenleme ve silme</p>
+                                <p class="text-sm text-gray-500">Eklenen her çeki listeden düzenleyebilir veya silebilirsiniz; sonuçlar anında yenilenir.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">PDF raporu</p>
+                                <p class="text-sm text-gray-500">Tüm çekleri, özet bilgileri ve durum sütunlarını (geçmiş / bugün / gelecek) içeren resmi görünümlü rapor oluşturulur.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">Klavye desteği</p>
+                                <p class="text-sm text-gray-500">Enter ile çek ekleme, + tuşuyla çek türü değiştirme desteğiyle hızlı veri girişi yapılabilir.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gizlilik -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        Gizlilik ve Veri Güvenliği
+                    </h2>
+                    <div class="bg-green-50 rounded-lg p-4 space-y-3">
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <p class="text-sm text-gray-700"><span class="font-semibold">Hiçbir veri sunucuya gönderilmez.</span> Girdiğiniz bilgiler yalnızca tarayıcınızın belleğinde işlenir.</p>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <p class="text-sm text-gray-700"><span class="font-semibold">Sayfa kapatıldığında veriler silinir.</span> Kalıcı olarak hiçbir yere kaydedilmez.</p>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <p class="text-sm text-gray-700"><span class="font-semibold">İnternet bağlantısı gerektirmez.</span> PDF oluşturma dahil tüm işlemler çevrimdışı çalışır.</p>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <p class="text-sm text-gray-700"><span class="font-semibold">Üçüncü taraf takip kodu yoktur.</span> Reklam ağları veya analitik servislerle hiçbir veri paylaşılmaz.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+        <!-- /Kullanım Kılavuzu ve Gizlilik -->
+
+
+
+       <!-- Hakkında Notu -->
+<div class="mt-4 border-t border-gray-200 pt-6 pb-2 about-note">
+    <div class="flex flex-col gap-3">
+        <p class="text-sm text-gray-500">
+            Bu araç, finans dünyasında çek vade hesaplamalarının ne kadar zaman aldığını bizzat yaşayan
+            <span class="font-semibold text-gray-700">V. Murat Yavuz</span> tarafından geliştirilmiştir.
+            Kişisel bir ihtiyaçtan doğmuştur, başkalarına da faydalı olması umuduyla paylaşılmıştır.
+        </p>
+        <div class="flex justify-end">
+            <a href="mailto:yavuz@vmurat.com"
+               class="inline-flex items-center gap-2 text-sm text-green-700 hover:text-green-900 font-medium transition-colors">
+                yavuz@vmurat.com
+            </a>
+        </div>
     </div>
+</div>
+<!-- /Hakkında Notu -->
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
     <script src="calculator.js"></script>
+    <script src="equalizer.js"></script>
 </body>
 </html>
