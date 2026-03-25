@@ -207,11 +207,7 @@ function updateCheckList() {
     }
 }
 
-// PDF indirme fonksiyonu
-function downloadPDF() {
-    // PDF indirme mantığı buraya eklenecek
-    alert('PDF indirme özelliği yakında eklenecek');
-}
+
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
@@ -426,7 +422,9 @@ function removeCheck(id) {
 function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
+
+    const calculationDate = document.getElementById('calculationDate').value;
+
     // Kenar boşlukları (mm cinsinden)
     const margin = {
         top: 25,
@@ -445,7 +443,7 @@ function downloadPDF() {
     // Başlık kısmı
     doc.setFontSize(8);
     doc.text("Cek Vade Analiz Raporu", margin.left, 10);
-    doc.text(formatDate(new Date()), pageWidth - margin.right - 20, 10);
+    doc.text(formatDate(new Date(calculationDate)), pageWidth - margin.right - 20, 10);
     
     // Ana başlık
     doc.setFontSize(11);
@@ -462,9 +460,10 @@ function downloadPDF() {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     const currentDate = new Date();
-    const refNo = `REF-${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2, '0')}${String(currentDate.getDate()).padStart(2, '0')}-${String(currentDate.getHours()).padStart(2, '0')}${String(currentDate.getMinutes()).padStart(2, '0')}`;
+    const calcDate = new Date(calculationDate);
+const refNo = `REF-${calcDate.getFullYear()}${String(calcDate.getMonth() + 1).padStart(2, '0')}${String(calcDate.getDate()).padStart(2, '0')}-${String(currentDate.getHours()).padStart(2, '0')}${String(currentDate.getMinutes()).padStart(2, '0')}`;
     
-    doc.text(`Rapor Tarihi : ${formatDate(currentDate)}`, margin.left, y);
+    doc.text(`Rapor Tarihi : ${formatDate(new Date(calculationDate))}`, margin.left, y);
     y += 5;
     doc.text(`Referans No : ${refNo}`, margin.left, y);
     
@@ -480,7 +479,6 @@ function downloadPDF() {
     const totalAmount = checks.reduce((sum, check) => sum + check.amount, 0);
     const averageAmount = totalAmount / checks.length;
     const weightedAverageDate = calculateWeightedAverageDate(checks);
-    const calculationDate = document.getElementById('calculationDate').value;
     const daysDifference = calculateDaysDifference(weightedAverageDate);
     
     y += 10;
@@ -550,7 +548,7 @@ function downloadPDF() {
             y = margin.top;
             doc.setFontSize(8);
             doc.text("Cek Vade Analiz Raporu", margin.left, 10);
-            doc.text(formatDate(new Date()), pageWidth - margin.right - 20, 10);
+            doc.text(formatDate(new Date(calculationDate)), pageWidth - margin.right - 20, 10);
             
             doc.setFontSize(11);
             doc.setFont("helvetica", "bold");
@@ -562,7 +560,7 @@ function downloadPDF() {
             y += 10;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            doc.text(`Rapor Tarihi : ${formatDate(currentDate)}`, margin.left, y);
+            doc.text(`Rapor Tarihi : ${formatDate(new Date(calculationDate))}`, margin.left, y);
             y += 5;
             doc.text(`Referans No : ${refNo}`, margin.left, y);
             
@@ -628,7 +626,7 @@ function downloadPDF() {
             doc.setFont("helvetica", "normal");
         }
         
-        const today = new Date();
+        const today = new Date(calculationDate);
         today.setHours(0, 0, 0, 0);
         const checkDate = new Date(check.dueDate);
         checkDate.setHours(0, 0, 0, 0);
