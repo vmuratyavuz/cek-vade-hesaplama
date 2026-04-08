@@ -1,13 +1,14 @@
 @media (min-width: 768px) {
-    #leftPanel, #rightPanel {
+
+    #leftPanel,
+    #rightPanel {
         height: var(--panel-height, auto);
     }
+
     #checkTableWrapper {
         overflow-y: auto;
     }
 }
-
-
 
 .about-note .flex {
     justify-content: center;
@@ -16,4 +17,223 @@
 .about-note {
     text-align: center;
     padding-bottom: 3rem;
+}
+
+/* === MODAL ORTAK === */
+.edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.edit-modal-overlay.hidden {
+    display: none;
+}
+
+.edit-modal-box {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    width: 100%;
+    max-width: 360px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+}
+
+.edit-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.edit-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.edit-modal-title svg {
+    flex-shrink: 0;
+}
+
+.edit-modal-close {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+}
+
+.edit-modal-close:hover {
+    background: #f3f4f6;
+}
+
+.edit-modal-info {
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.edit-modal-info span {
+    font-weight: 600;
+    color: #111827;
+}
+
+.edit-modal-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.5rem;
+}
+
+/* İptal / Hayır butonu — her iki modalde ortak */
+.edit-modal-cancel {
+    flex: 1;
+    padding: 9px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+}
+
+.edit-modal-cancel:hover {
+    background: #f3f4f6;
+}
+
+/* Düzelt butonu — siyah */
+.edit-modal-save {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.edit-modal-save:hover {
+    background: #1f2937;
+}
+
+/* === SİLME MODALI === */
+.delete-modal-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #fef2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.delete-modal-body {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+/* Evet, Sil butonu — kırmızı korunuyor */
+.delete-modal-confirm {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 8px;
+    background: #dc2626;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.delete-modal-confirm:hover {
+    background: #b91c1c;
+}
+
+/* === TABLO AKSİYON BUTONLARI === */
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.btn-action {
+    padding: 0px 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    line-height: 1.6;
+}
+
+/* Düzenle — gri */
+.btn-edit {
+    background: #f3f4f6;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.btn-edit:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+/* Sil — kırmızı korunuyor */
+.btn-delete {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-delete:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+@media (max-width: 767px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .btn-action {
+        text-align: center;
+        width: 100%;
+    }
+}
+
+.edit-modal-box input[type="date"],
+.edit-modal-box input[type="tel"] {
+    border: 1px solid #111827;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #111827 !important;
+    box-shadow: none !important;
 }
