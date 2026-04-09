@@ -5,9 +5,12 @@
         height: var(--panel-height, auto);
     }
 
-    #checkTableWrapper {
-        overflow-y: auto;
-    }
+   
+}
+
+#checkTableWrapper {
+    max-height: 330px;
+    overflow-y: auto;
 }
 
 .about-note .flex {
@@ -237,3 +240,39 @@ select:focus {
     border-color: #111827 !important;
     box-shadow: none !important;
 }
+
+#checkList tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+#checkTypeInner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#currencySelect {
+    height: 42px;
+}
+
+.check-type-col {
+    width: 55%;
+}
+
+.currency-type-col {
+    width: 45%;
+}
+
+
+
+
+
+.check-type-col > div.border {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+

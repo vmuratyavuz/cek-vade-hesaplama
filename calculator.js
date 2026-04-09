@@ -1,5 +1,7 @@
 // Çek listesi için array
 let checks = [];
+let exchangeRates = { USD: null, EUR: null };
+let isRateLocked = true;
 
 // Düzenleme modunu takip etmek için değişken
 let isEditing = false;
@@ -161,34 +163,36 @@ function displayResults(totalAmount, averageAmount, averageDate, daysDifference)
     pdfButton.classList.remove('hidden');
 }
 
-// Çek listesini güncelleme
 function updateCheckList() {
     const checkList = document.getElementById('checkList');
     checkList.innerHTML = '';
 
-    // Çekleri tarihe göre sırala (eskiden yeniye)
     const sortedChecks = [...checks].sort((a, b) => {
         return new Date(a.dueDate) - new Date(b.dueDate);
     });
 
     sortedChecks.forEach((check, index) => {
         const row = document.createElement('tr');
+
+        const amountDisplay = check.currency !== 'TL'
+            ? `${formatMoney(check.amountOriginal)} ${check.currency} <span class="text-xs text-gray-400">(${formatMoney(check.amount)} TL)</span>`
+            : `${formatMoney(check.amount)}&nbsp;TL`;
+
         row.innerHTML = `
             <td class="px-2 py-2 w-[10%]">${index + 1}</td>
             <td class="px-2 py-2 w-[25%]">${formatDate(check.dueDate)}</td>
-            <td class="px-2 py-2 w-[25%] whitespace-nowrap font-medium">${formatMoney(check.amount)}&nbsp;TL</td>
+            <td class="px-2 py-2 w-[25%] whitespace-nowrap font-medium">${amountDisplay}</td>
             <td class="px-2 py-2 w-[20%] text-center">${check.type.charAt(0)}</td>
             <td class="px-2 py-2 w-[20%]">
-    <div class="action-buttons">
-        <button onclick="editCheck(${check.id})" class="btn-action btn-edit">Düzenle</button>
-        <button onclick="removeCheck(${check.id})" class="btn-action btn-delete">Sil</button>
-    </div>
-</td>
+                <div class="action-buttons">
+                    <button onclick="editCheck(${check.id})" class="btn-action btn-edit">Düzenle</button>
+                    <button onclick="removeCheck(${check.id})" class="btn-action btn-delete">Sil</button>
+                </div>
+            </td>
         `;
         checkList.appendChild(row);
     });
 
-    // Liste boşsa PDF butonunu gizle
     if (checks.length === 0) {
         pdfButton.classList.add('hidden');
     }
@@ -207,16 +211,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleCircle = document.getElementById('toggleCircle');
 
     function updateToggle() {
-    if (checkTypeInput.checked) {
-        toggleBackground.style.backgroundColor = '#D1D5DB'; // siyah
-        toggleCircle.style.transform = 'translateX(-16px)';
-        checkTypeLabel.textContent = 'Firma Çeki';
-    } else {
-        toggleBackground.style.backgroundColor = '#111827'; // gri 111827
-        toggleCircle.style.transform = 'translateX(0)';
-        checkTypeLabel.textContent = 'Ciro Edilen Çek';
+        if (checkTypeInput.checked) {
+            toggleBackground.style.backgroundColor = '#D1D5DB'; // siyah
+            toggleCircle.style.transform = 'translateX(-16px)';
+            checkTypeLabel.textContent = 'Firma Çeki';
+        } else {
+            toggleBackground.style.backgroundColor = '#111827'; // gri 111827
+            toggleCircle.style.transform = 'translateX(0)';
+            checkTypeLabel.textContent = 'Ciro Edilen Çek';
+        }
     }
-}
 
     // Başlangıç durumu için
     updateToggle();
@@ -344,8 +348,117 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === this) closeDeleteModal();
     });
 
+    // Döviz türü değişince
+    const currencySelect = document.getElementById('currencySelect');
+    currencySelect.addEventListener('change', function () {
+        handleCurrencyChange(this.value);
+    });
+
+    // Sayfa açılınca kurları çek
+    fetchExchangeRates();
+
+
+
 
 });
+
+// TCMB'den kurları çek
+async function fetchExchangeRates() {
+    try {
+        const tcmbUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(tcmbUrl)}`;
+        
+        const response = await fetch(proxyUrl);
+        const text = await response.text();
+        
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+
+        const currencies = xml.querySelectorAll('Currency');
+        currencies.forEach(currency => {
+            const code = currency.getAttribute('CurrencyCode');
+            const buyingEl = currency.querySelector('ForexBuying');
+            if (!buyingEl || !buyingEl.textContent) return;
+            const rate = parseFloat(buyingEl.textContent.replace(',', '.'));
+            if (code === 'USD' && !isNaN(rate)) exchangeRates.USD = rate;
+            if (code === 'EUR' && !isNaN(rate)) exchangeRates.EUR = rate;
+        });
+
+        console.log('Kurlar yüklendi:', exchangeRates);
+    } catch (error) {
+        console.error('Kur çekilemedi:', error);
+    }
+}
+
+// Döviz türü değişince kur satırını göster/gizle
+function handleCurrencyChange(currency) {
+    const row = document.getElementById('exchangeRateRow');
+    const label = document.getElementById('exchangeRateLabel');
+    const input = document.getElementById('exchangeRateInput');
+    const info = document.getElementById('exchangeRateInfo');
+
+    if (currency === 'TL') {
+        row.classList.add('hidden');
+        equalizePanels();
+        return;
+    }
+
+    row.classList.remove('hidden');
+    label.textContent = `${currency} Kuru`;
+
+    const rate = exchangeRates[currency];
+    if (rate) {
+        input.value = rate.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        info.textContent = 'TCMB güncel kuru kullanılmaktadır.';
+    } else {
+        input.value = '';
+        info.textContent = 'Kur bilgisi alınamadı, lütfen manuel girin.';
+    }
+
+    // Kilidi sıfırla
+    isRateLocked = true;
+    input.disabled = true;
+    document.getElementById('lockIcon').innerHTML = `
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+    `;
+
+    equalizePanels();
+}
+
+// Kur kilidini aç/kapat
+function toggleExchangeRateLock() {
+    const input = document.getElementById('exchangeRateInput');
+    const lockIcon = document.getElementById('lockIcon');
+    isRateLocked = !isRateLocked;
+
+    if (isRateLocked) {
+        input.disabled = true;
+        lockIcon.innerHTML = `
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+        `;
+        // Kilitlendiyse TCMB kuruna geri dön
+        const currency = document.getElementById('currencySelect').value;
+        const rate = exchangeRates[currency];
+        if (rate) {
+            input.value = rate.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('exchangeRateInfo').textContent = 'TCMB güncel kuru kullanılmaktadır.';
+        }
+    } else {
+        input.disabled = false;
+        input.focus();
+        input.select();
+        lockIcon.innerHTML = `
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 0 10 0v4"/>
+        `;
+        document.getElementById('exchangeRateInfo').textContent = 'Manuel kur girişi aktif.';
+    }
+    equalizePanels();
+
+
+}
 
 
 
@@ -385,13 +498,31 @@ function addCheck() {
         return;
     }
 
-    const check = {
-        id: Date.now(),
-        date: dateInput.value,
-        amount: amount,
-        dueDate: dateInput.value,
-        type: document.getElementById('checkTypeLabel').textContent
-    };
+    const currency = document.getElementById('currencySelect').value;
+let exchangeRate = 1;
+let amountTL = amount;
+
+if (currency !== 'TL') {
+    const rateRaw = document.getElementById('exchangeRateInput').value;
+    exchangeRate = parseMoneyValue(rateRaw);
+    if (!exchangeRate || exchangeRate <= 0) {
+        alert('Lütfen geçerli bir kur giriniz!');
+        document.getElementById('exchangeRateInput').focus();
+        return;
+    }
+    amountTL = amount * exchangeRate;
+}
+
+const check = {
+    id: Date.now(),
+    date: dateInput.value,
+    dueDate: dateInput.value,
+    amount: amountTL,
+    amountOriginal: amount,
+    currency: currency,
+    exchangeRate: exchangeRate,
+    type: document.getElementById('checkTypeLabel').textContent
+};
 
     checks.push(check);
     updateCheckList();
