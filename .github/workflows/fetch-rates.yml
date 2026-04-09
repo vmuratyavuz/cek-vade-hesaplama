@@ -8,6 +8,8 @@ on:
 jobs:
   fetch-rates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,47 +18,42 @@ jobs:
         run: |
           RESPONSE=$(curl -s -L "https://www.tcmb.gov.tr/kurlar/today.xml")
           echo "Response length: ${#RESPONSE}"
-          echo "First 500 chars: ${RESPONSE:0:500}"
-          
+
           USD=$(echo "$RESPONSE" | python3 -c "
-          import sys
-          import xml.etree.ElementTree as ET
-          content = sys.stdin.read()
-          root = ET.fromstring(content)
-          for currency in root.findall('Currency'):
-              code = currency.get('CurrencyCode')
-              if code == 'USD':
-                  buying = currency.find('ForexBuying')
-                  if buying is not None and buying.text:
-                      print(buying.text.replace(',', '.'))
+          import sys, xml.etree.ElementTree as ET
+          root = ET.fromstring(sys.stdin.read())
+          for c in root.findall('Currency'):
+              if c.get('CurrencyCode') == 'USD':
+                  b = c.find('ForexBuying')
+                  if b is not None and b.text:
+                      print(b.text.replace(',', '.'))
                       break
           " 2>/dev/null || echo "0")
-          
+
           EUR=$(echo "$RESPONSE" | python3 -c "
-          import sys
-          import xml.etree.ElementTree as ET
-          content = sys.stdin.read()
-          root = ET.fromstring(content)
-          for currency in root.findall('Currency'):
-              code = currency.get('CurrencyCode')
-              if code == 'EUR':
-                  buying = currency.find('ForexBuying')
-                  if buying is not None and buying.text:
-                      print(buying.text.replace(',', '.'))
+          import sys, xml.etree.ElementTree as ET
+          root = ET.fromstring(sys.stdin.read())
+          for c in root.findall('Currency'):
+              if c.get('CurrencyCode') == 'EUR':
+                  b = c.find('ForexBuying')
+                  if b is not None and b.text:
+                      print(b.text.replace(',', '.'))
                       break
           " 2>/dev/null || echo "0")
-          
+
           echo "USD: $USD, EUR: $EUR"
-          
-          cat > rates.json << EOF
-          {
-            "USD": $USD,
-            "EUR": $EUR,
-            "date": "$(date +%d.%m.%Y)"
+
+          python3 -c "
+          import json
+          data = {
+              'USD': float('$USD'),
+              'EUR': float('$EUR'),
+              'date': '$(date +%d.%m.%Y)'
           }
-          EOF
-          
-          cat rates.json
+          with open('rates.json', 'w') as f:
+              json.dump(data, f, ensure_ascii=False)
+          print('Yazıldı:', data)
+          "
 
       - name: Commit and push
         run: |
