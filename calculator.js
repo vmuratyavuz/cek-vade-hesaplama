@@ -365,26 +365,13 @@ document.addEventListener('DOMContentLoaded', function () {
 // TCMB'den kurları çek
 async function fetchExchangeRates() {
     try {
-        const tcmbUrl = 'https://www.tcmb.gov.tr/kurlar/today.xml';
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(tcmbUrl)}`;
-        
-        const response = await fetch(proxyUrl);
-        const text = await response.text();
-        
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(text, 'text/xml');
+        const response = await fetch('https://raw.githubusercontent.com/vmuratyavuz/cek-vade-hesaplama/main/rates.json');
+        const data = await response.json();
 
-        const currencies = xml.querySelectorAll('Currency');
-        currencies.forEach(currency => {
-            const code = currency.getAttribute('CurrencyCode');
-            const buyingEl = currency.querySelector('ForexBuying');
-            if (!buyingEl || !buyingEl.textContent) return;
-            const rate = parseFloat(buyingEl.textContent.replace(',', '.'));
-            if (code === 'USD' && !isNaN(rate)) exchangeRates.USD = rate;
-            if (code === 'EUR' && !isNaN(rate)) exchangeRates.EUR = rate;
-        });
+        if (data.USD && data.USD > 0) exchangeRates.USD = data.USD;
+        if (data.EUR && data.EUR > 0) exchangeRates.EUR = data.EUR;
 
-        console.log('Kurlar yüklendi:', exchangeRates);
+        console.log('Kurlar yüklendi:', exchangeRates, '| Tarih:', data.date);
     } catch (error) {
         console.error('Kur çekilemedi:', error);
     }
