@@ -65,3 +65,5 @@ jobs:
           git add rates.json
           git diff --staged --quiet || git commit -m "Kurlar güncellendi: $(date +%d.%m.%Y)"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
