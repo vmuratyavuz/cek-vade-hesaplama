@@ -1,0 +1,59 @@
+name: Fetch TCMB Rates
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'  # Hafta içi her gün 06:00 UTC
+  workflow_dispatch:         # Manuel tetikleme için
+
+jobs:
+  fetch-rates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch rates from TCMB
+        run: |
+          TODAY=$(date +%d-%m-%Y)
+          RESPONSE=$(curl -s "https://evds3.tcmb.gov.tr/service/evds/series=TP.DK.USD.A-TP.DK.EUR.A&startDate=${TODAY}&endDate=${TODAY}&type=json&key=4AWJbrL1Or")
+          echo "API Response: $RESPONSE"
+          
+          USD=$(echo $RESPONSE | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          items = data.get('items', [])
+          if items:
+              val = items[0].get('TP_DK_USD_A', '0') or '0'
+              print(val.replace(',', '.'))
+          else:
+              print('0')
+          ")
+          
+          EUR=$(echo $RESPONSE | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          items = data.get('items', [])
+          if items:
+              val = items[0].get('TP_DK_EUR_A', '0') or '0'
+              print(val.replace(',', '.'))
+          else:
+              print('0')
+          ")
+          
+          echo "USD: $USD, EUR: $EUR"
+          
+          cat > rates.json << EOF
+          {
+            "USD": $USD,
+            "EUR": $EUR,
+            "date": "$(date +%d.%m.%Y)"
+          }
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add rates.json
+          git diff --staged --quiet || git commit -m "Kurlar güncellendi: $(date +%d.%m.%Y)"
+          git push
