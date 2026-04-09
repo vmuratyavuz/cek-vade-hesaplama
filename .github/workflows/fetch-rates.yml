@@ -2,20 +2,24 @@ name: Fetch TCMB Rates
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'  # Hafta içi her gün 06:00 UTC
-  workflow_dispatch:         # Manuel tetikleme için
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   fetch-rates:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Fetch rates from TCMB
         run: |
           TODAY=$(date +%d-%m-%Y)
-          RESPONSE=$(curl -s "https://evds3.tcmb.gov.tr/service/evds/series=TP.DK.USD.A-TP.DK.EUR.A&startDate=${TODAY}&endDate=${TODAY}&type=json&key=4AWJbrL1Or")
+          echo "Tarih: $TODAY"
+          
+          RESPONSE=$(curl -s -H "key: 4AWJbrL1Or" \
+            "https://evds2.tcmb.gov.tr/service/evds/series=TP.DK.USD.A-TP.DK.EUR.A&startDate=${TODAY}&endDate=${TODAY}&type=json&key=4AWJbrL1Or")
+          
           echo "API Response: $RESPONSE"
           
           USD=$(echo $RESPONSE | python3 -c "
@@ -23,8 +27,8 @@ jobs:
           data = json.load(sys.stdin)
           items = data.get('items', [])
           if items:
-              val = items[0].get('TP_DK_USD_A', '0') or '0'
-              print(val.replace(',', '.'))
+              val = items[0].get('TP_DK_USD_A') or '0'
+              print(str(val).replace(',', '.'))
           else:
               print('0')
           ")
@@ -34,8 +38,8 @@ jobs:
           data = json.load(sys.stdin)
           items = data.get('items', [])
           if items:
-              val = items[0].get('TP_DK_EUR_A', '0') or '0'
-              print(val.replace(',', '.'))
+              val = items[0].get('TP_DK_EUR_A') or '0'
+              print(str(val).replace(',', '.'))
           else:
               print('0')
           ")
@@ -49,6 +53,8 @@ jobs:
             "date": "$(date +%d.%m.%Y)"
           }
           EOF
+          
+          cat rates.json
 
       - name: Commit and push
         run: |
