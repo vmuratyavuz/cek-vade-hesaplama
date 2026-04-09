@@ -17,49 +17,17 @@ jobs:
           TODAY=$(date +%d-%m-%Y)
           echo "Tarih: $TODAY"
           
-          RESPONSE=$(curl -s -H "key: 4AWJbrL1Or" \
-            "https://evds2.tcmb.gov.tr/service/evds/series=TP.DK.USD.A-TP.DK.EUR.A&startDate=${TODAY}&endDate=${TODAY}&type=json&key=4AWJbrL1Or")
+          RESPONSE=$(curl -v -s \
+            -H "key: 4AWJbrL1Or" \
+            -H "Accept: application/json" \
+            "https://evds2.tcmb.gov.tr/service/evds/series=TP.DK.USD.A-TP.DK.EUR.A&startDate=${TODAY}&endDate=${TODAY}&type=json&key=4AWJbrL1Or" 2>&1)
           
-          echo "API Response: $RESPONSE"
-          
-          USD=$(echo $RESPONSE | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          items = data.get('items', [])
-          if items:
-              val = items[0].get('TP_DK_USD_A') or '0'
-              print(str(val).replace(',', '.'))
-          else:
-              print('0')
-          ")
-          
-          EUR=$(echo $RESPONSE | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          items = data.get('items', [])
-          if items:
-              val = items[0].get('TP_DK_EUR_A') or '0'
-              print(str(val).replace(',', '.'))
-          else:
-              print('0')
-          ")
-          
-          echo "USD: $USD, EUR: $EUR"
-          
-          cat > rates.json << EOF
-          {
-            "USD": $USD,
-            "EUR": $EUR,
-            "date": "$(date +%d.%m.%Y)"
-          }
-          EOF
-          
-          cat rates.json
+          echo "Tam Response: $RESPONSE"
 
       - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add rates.json
-          git diff --staged --quiet || git commit -m "Kurlar güncellendi: $(date +%d.%m.%Y)"
-          git push
+          git add rates.json || true
+          git diff --staged --quiet || git commit -m "Test: $(date +%d.%m.%Y)"
+          git push || true
