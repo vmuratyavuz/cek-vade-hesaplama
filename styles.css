@@ -276,3 +276,12 @@ select:focus {
     justify-content: space-between;
 }
 
+input[type="date"] {
+    background-color: #ffffff;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
