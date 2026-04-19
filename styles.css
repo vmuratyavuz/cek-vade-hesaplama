@@ -288,14 +288,9 @@ input[type="date"] {
 }
 
 @media (max-width: 767px) {
-    input[type="date"]:not(:valid) {
-        color: #9ca3af;
-    }
-    
     input[type="date"]:not(:valid)::before {
-        content: "Tarih seçin";
+        content: "gg.aa.yyyy";
         color: #9ca3af;
-        pointer-events: none;
     }
 }
 
