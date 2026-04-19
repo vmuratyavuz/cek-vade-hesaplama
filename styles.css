@@ -287,16 +287,5 @@ input[type="date"] {
     line-height: 1.5;
 }
 
-@media (max-width: 767px) {
-    .date-placeholder {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 12px;
-        color: #9ca3af;
-        font-size: 14px;
-        pointer-events: none;
-        background: #ffffff;
-    }
-}
+
 
