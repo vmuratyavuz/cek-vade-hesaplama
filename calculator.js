@@ -248,6 +248,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Mobil date input placeholder
+    if (window.innerWidth < 768) {
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            const wrapper = input.parentElement;
+
+            const placeholder = document.createElement('div');
+            placeholder.className = 'date-placeholder';
+            placeholder.textContent = 'Tarih seçin';
+            wrapper.style.position = 'relative';
+            wrapper.appendChild(placeholder);
+
+            const updatePlaceholder = () => {
+                placeholder.style.display = input.value ? 'none' : 'block';
+            };
+
+            input.addEventListener('change', updatePlaceholder);
+            input.addEventListener('input', updatePlaceholder);
+            updatePlaceholder();
+        });
+    }
+
 
     // Düzenleme modalı döviz değişimi
     document.getElementById('editCurrencySelect').addEventListener('change', function () {

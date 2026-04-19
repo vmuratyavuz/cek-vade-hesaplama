@@ -288,9 +288,15 @@ input[type="date"] {
 }
 
 @media (max-width: 767px) {
-    input[type="date"]:not(:valid)::before {
-        content: "gg.aa.yyyy";
+    .date-placeholder {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 12px;
         color: #9ca3af;
+        font-size: 14px;
+        pointer-events: none;
+        background: #ffffff;
     }
 }
 
