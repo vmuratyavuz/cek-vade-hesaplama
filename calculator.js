@@ -175,13 +175,13 @@ function updateCheckList() {
         const row = document.createElement('tr');
 
         const amountDisplay = check.currency !== 'TL'
-            ? `${formatMoney(check.amountOriginal)} ${check.currency} <span class="text-xs text-gray-400">(${formatMoney(check.amount)} TL)</span>`
+            ? `${formatMoney(check.amountOriginal)} ${check.currency}<br><span class="text-xs text-gray-400">${formatMoney(check.amount)} TL</span>`
             : `${formatMoney(check.amount)}&nbsp;TL`;
 
         row.innerHTML = `
             <td class="px-2 py-2 w-[10%]">${index + 1}</td>
             <td class="px-2 py-2 w-[25%]">${formatDate(check.dueDate)}</td>
-            <td class="px-2 py-2 w-[25%] whitespace-nowrap font-medium">${amountDisplay}</td>
+            <td class="px-2 py-2 w-[25%] font-medium">${amountDisplay}</td>
             <td class="px-2 py-2 w-[20%] text-center">${check.type.charAt(0)}</td>
             <td class="px-2 py-2 w-[20%]">
                 <div class="action-buttons">
@@ -235,6 +235,26 @@ document.addEventListener('DOMContentLoaded', function () {
             updateToggle();
         }
     });
+
+    // - tuşu için döviz değiştirme
+    document.addEventListener('keydown', function (event) {
+        if (event.key === '-' || event.key === 'NumpadSubtract') {
+            const currencySelect = document.getElementById('currencySelect');
+            const options = ['TL', 'USD', 'EUR'];
+            const currentIndex = options.indexOf(currencySelect.value);
+            const nextIndex = (currentIndex + 1) % options.length;
+            currencySelect.value = options[nextIndex];
+            handleCurrencyChange(options[nextIndex]);
+        }
+    });
+
+
+    // Düzenleme modalı döviz değişimi
+    document.getElementById('editCurrencySelect').addEventListener('change', function () {
+        handleEditCurrencyChange(this.value);
+    });
+
+
 
     // Hesaplama tarihi için bugünün tarihini set et
     const today = new Date();
@@ -413,6 +433,28 @@ function handleCurrencyChange(currency) {
     equalizePanels();
 }
 
+function handleEditCurrencyChange(currency, existingRate = null) {
+    const row = document.getElementById('editExchangeRateRow');
+    const label = document.getElementById('editExchangeRateLabel');
+    const input = document.getElementById('editExchangeRateInput');
+
+    if (currency === 'TL') {
+        row.classList.add('hidden');
+        return;
+    }
+
+    row.classList.remove('hidden');
+    label.textContent = `${currency} Kuru`;
+
+    if (existingRate && existingRate !== 1) {
+        input.value = existingRate.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } else if (exchangeRates[currency]) {
+        input.value = exchangeRates[currency].toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } else {
+        input.value = '';
+    }
+}
+
 // Kur kilidini aç/kapat
 function toggleExchangeRateLock() {
     const input = document.getElementById('exchangeRateInput');
@@ -486,30 +528,30 @@ function addCheck() {
     }
 
     const currency = document.getElementById('currencySelect').value;
-let exchangeRate = 1;
-let amountTL = amount;
+    let exchangeRate = 1;
+    let amountTL = amount;
 
-if (currency !== 'TL') {
-    const rateRaw = document.getElementById('exchangeRateInput').value;
-    exchangeRate = parseMoneyValue(rateRaw);
-    if (!exchangeRate || exchangeRate <= 0) {
-        alert('Lütfen geçerli bir kur giriniz!');
-        document.getElementById('exchangeRateInput').focus();
-        return;
+    if (currency !== 'TL') {
+        const rateRaw = document.getElementById('exchangeRateInput').value;
+        exchangeRate = parseMoneyValue(rateRaw);
+        if (!exchangeRate || exchangeRate <= 0) {
+            alert('Lütfen geçerli bir kur giriniz!');
+            document.getElementById('exchangeRateInput').focus();
+            return;
+        }
+        amountTL = amount * exchangeRate;
     }
-    amountTL = amount * exchangeRate;
-}
 
-const check = {
-    id: Date.now(),
-    date: dateInput.value,
-    dueDate: dateInput.value,
-    amount: amountTL,
-    amountOriginal: amount,
-    currency: currency,
-    exchangeRate: exchangeRate,
-    type: document.getElementById('checkTypeLabel').textContent
-};
+    const check = {
+        id: Date.now(),
+        date: dateInput.value,
+        dueDate: dateInput.value,
+        amount: amountTL,
+        amountOriginal: amount,
+        currency: currency,
+        exchangeRate: exchangeRate,
+        type: document.getElementById('checkTypeLabel').textContent
+    };
 
     checks.push(check);
     updateCheckList();
@@ -537,24 +579,27 @@ function editCheck(id) {
     const check = checks.find(c => c.id === id);
     if (!check) return;
 
-    // Modal bilgi satırını doldur
     const sortedChecks = [...checks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
     const displayIndex = sortedChecks.findIndex(c => c.id === id) + 1;
     document.getElementById('editModalInfo').innerHTML =
-        `Çek No: <span>#${displayIndex}</span> &nbsp;·&nbsp; Tür: <span>${check.type}</span>`;
+        `Çek No: <span>#${displayIndex}</span><br>Tür: <span>${check.type}</span>`;
 
-    // Alanları doldur
+    // Tarihi doldur
     document.getElementById('editCheckDate').value = check.date;
 
-    // Tutarı formatlanmış halde göster
+    // Tutarı doldur — orijinal döviz tutarını göster
     const amountInput = document.getElementById('editCheckAmount');
-    const formatted = check.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    amountInput.value = formatted;
+    const displayAmount = check.currency !== 'TL' ? check.amountOriginal : check.amount;
+    amountInput.value = displayAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // Hangi çekin düzenlendiğini sakla
+    // Döviz türünü doldur
+    const currencySelect = document.getElementById('editCurrencySelect');
+    currencySelect.value = check.currency || 'TL';
+
+    // Kur satırını ayarla
+    handleEditCurrencyChange(check.currency || 'TL', check.exchangeRate || 1);
+
     document.getElementById('editModal').dataset.editingId = id;
-
-    // Modalı aç
     document.getElementById('editModal').classList.remove('hidden');
     document.getElementById('editCheckDate').focus();
 }
@@ -570,6 +615,7 @@ function saveEdit() {
     const id = parseInt(document.getElementById('editModal').dataset.editingId);
     const dateInput = document.getElementById('editCheckDate');
     const amountInput = document.getElementById('editCheckAmount');
+    const currency = document.getElementById('editCurrencySelect').value;
 
     // Tarih kontrolü
     if (!dateInput.value) {
@@ -597,15 +643,31 @@ function saveEdit() {
         return;
     }
 
-    // İlgili çeki bul ve güncelle (id ve type korunur)
+    // Kur kontrolü
+    let exchangeRate = 1;
+    let amountTL = amount;
+
+    if (currency !== 'TL') {
+        const rateRaw = document.getElementById('editExchangeRateInput').value;
+        exchangeRate = parseMoneyValue(rateRaw);
+        if (!exchangeRate || exchangeRate <= 0) {
+            alert('Lütfen geçerli bir kur giriniz!');
+            document.getElementById('editExchangeRateInput').focus();
+            return;
+        }
+        amountTL = amount * exchangeRate;
+    }
+
     const checkIndex = checks.findIndex(c => c.id === id);
     if (checkIndex === -1) return;
 
     checks[checkIndex].date = dateInput.value;
     checks[checkIndex].dueDate = dateInput.value;
-    checks[checkIndex].amount = amount;
+    checks[checkIndex].amount = amountTL;
+    checks[checkIndex].amountOriginal = amount;
+    checks[checkIndex].currency = currency;
+    checks[checkIndex].exchangeRate = exchangeRate;
 
-    // Modalı kapat ve listeyi/sonuçları güncelle
     closeEditModal();
     updateCheckList();
     calculateAllChecks();
