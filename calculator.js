@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    
+
 
 
     // Düzenleme modalı döviz değişimi

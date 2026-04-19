@@ -5,7 +5,7 @@
         height: var(--panel-height, auto);
     }
 
-   
+
 }
 
 #checkTableWrapper {
@@ -268,7 +268,7 @@ select:focus {
 
 
 
-.check-type-col > div.border {
+.check-type-col>div.border {
     height: 42px;
     display: flex;
     align-items: center;
@@ -286,6 +286,3 @@ input[type="date"] {
     min-height: 42px;
     line-height: 1.5;
 }
-
-
-
