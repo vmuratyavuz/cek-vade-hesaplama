@@ -286,3 +286,7 @@ input[type="date"] {
     min-height: 42px;
     line-height: 1.5;
 }
+
+.feature-card {
+    min-height: 2px;
+}
