@@ -68,6 +68,63 @@
     }
     </script>
 
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Ağırlıklı ortalama vade nedir ve nasıl hesaplanır?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ağırlıklı ortalama vade, her çekin tutarını ve vadesini birlikte dikkate alan matematiksel bir hesaplama yöntemidir. Her çekin tutarı ile vade tarihi çarpılır, bu çarpımlar toplanır ve toplam tutara bölünür."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Firma çeki ile ciro çeki arasındaki fark nedir?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Firma çeki, ödemeyi yapan firmanın kendi adına düzenlediği çektir. Ciro edilen çek ise başka bir firmadan tahsilat amacıyla alınan ve ciro yoluyla devredilen çektir."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Hesaplama tarihi ne işe yarar?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hesaplama tarihi, ortalama vadenin kaç gün sonra veya önce olduğunu belirlediğiniz referans tarihidir. Varsayılan olarak bugünün tarihi seçilidir; farklı bir tarih girerseniz tüm sonuçlar anında güncellenir."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Dövizli çek hesaplaması nasıl yapılır?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "USD veya EUR cinsinden çek eklerken program TCMB güncel kurunu otomatik getirir. Kur kilidini açarak manuel kur girişi de yapabilirsiniz. Tüm hesaplamalar TL karşılığı üzerinden yapılır."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "PDF raporu ne içerir?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "PDF raporu; referans numarası, rapor tarihi, toplam tutar, ortalama vade tarihi bilgilerini içeren özet bölümü ile tüm çeklerin vade, tutar, çek türü, kalan gün ve durum sütunlarını içeren detay tablosunu kapsar."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Girdiğim veriler kaydediliyor mu?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hayır. Hiçbir veri sunucuya gönderilmez. Tüm hesaplamalar yalnızca tarayıcınızın belleğinde gerçekleşir, sayfa kapatıldığında veriler silinir."
+            }
+        }
+    ]
+}
+</script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.googletagmanager.com">
@@ -345,6 +402,74 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sıkça Sorulan Sorular -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Sıkça Sorulan Sorular
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">Ağırlıklı ortalama vade nedir ve nasıl
+                            hesaplanır?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">Ağırlıklı ortalama vade, her çekin tutarını ve
+                            vadesini birlikte dikkate alan matematiksel bir hesaplama yöntemidir. Basit ortalamadan
+                            farklı olarak, yüksek tutarlı çeklerin vade tarihine daha fazla ağırlık verir. Formül
+                            şöyledir: her çekin tutarı ile vade tarihi çarpılır, bu çarpımlar toplanır ve toplam tutara
+                            bölünür. Bu sayede portföyünüzün gerçek vade ağırlık merkezini bulursunuz.</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">Firma çeki ile ciro çeki arasındaki fark
+                            nedir?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">Firma çeki, ödemeyi yapan firmanın kendi adına
+                            düzenlediği çektir. Ciro edilen çek ise başka bir firmadan tahsilat amacıyla alınan ve ciro
+                            yoluyla devredilen çektir. Bu program her iki türü de destekler; çek türünü seçmek PDF
+                            raporuna yansır ve portföy takibinizi kolaylaştırır.</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">Hesaplama tarihi ne işe yarar?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">Hesaplama tarihi, ortalama vadenin kaç gün
+                            sonra veya önce olduğunu belirlediğiniz referans tarihidir. Varsayılan olarak bugünün tarihi
+                            seçilidir. Farklı bir tarih girerseniz — örneğin bir sözleşme tarihi veya ileri bir tarih —
+                            tüm sonuçlar ve PDF raporu bu tarihe göre anında güncellenir.</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">Dövizli çek hesaplaması nasıl yapılır?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">USD veya EUR cinsinden çek eklerken program
+                            TCMB'nin güncel kurunu otomatik olarak getirir. Kur kilidini açarak manuel kur girişi de
+                            yapabilirsiniz. Tüm hesaplamalar TL karşılığı üzerinden yapılır; çek listesinde hem orijinal
+                            döviz tutarı hem de TL karşılığı gösterilir.</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">PDF raporu ne içerir?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">PDF raporu; referans numarası, rapor tarihi,
+                            toplam çek adedi, toplam tutar, ortalama çek tutarı, ağırlıklı ortalama vade tarihi ve vade
+                            günü bilgilerini içeren bir özet bölümü ile tüm çeklerin tek tek listelendiği detay
+                            tablosunu kapsar. Tabloda her çek için vade tarihi, tutar, çek türü, kalan gün ve durum
+                            (Geçmiş / Bugün / Gelecek) sütunları yer alır.</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <p class="font-semibold text-sm text-gray-800 mb-1">Girdiğim veriler kaydediliyor mu?</p>
+                        <p class="text-sm text-gray-500 leading-relaxed">Hayır. Girdiğiniz hiçbir veri sunucuya
+                            gönderilmez veya kaydedilmez. Tüm hesaplamalar yalnızca tarayıcınızın belleğinde
+                            gerçekleşir. Sayfayı kapattığınızda veriler tamamen silinir. PDF oluşturma dahil tüm
+                            işlemler internet bağlantısı gerektirmez.</p>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /Sıkça Sorulan Sorular -->
 
             <!-- Özellikler ve Gizlilik yan yana -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
