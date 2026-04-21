@@ -58,9 +58,19 @@
             "email": "yavuz@vmurat.com"
         },
         "inLanguage": "tr-TR",
-        "isAccessibleForFree": true
+        "isAccessibleForFree": true, "featureList": [
+    "Ağırlıklı ortalama vade hesaplama",
+    "Firma çeki ve ciro çeki desteği",
+    "Döviz kurlu hesaplama (USD, EUR)",
+    "PDF raporu oluşturma",
+    "Klavye odaklı veri girişi",
+    "Tarayıcıda çalışır, veri sunucuya gönderilmez"]
     }
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TJDDWG128E"></script>
@@ -71,14 +81,17 @@
         gtag('config', 'G-TJDDWG128E');
     </script>
 
+
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    
+
 </head>
 
 <body class="bg-gray-100 px-2 py-4 md:px-4">
     <div class="max-w-6xl mx-auto">
+        <h1 class="sr-only">Çek Vade Hesaplama — Ağırlıklı Ortalama Vade Hesaplama Aracı</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <!-- Sol Panel - Giriş Formu -->
@@ -573,10 +586,10 @@
 
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
-    <script src="calculator.js"></script>
-    <script src="equalizer.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/polyfills.umd.js"></script>
+    <script defer src="calculator.js"></script>
+    <script defer src="equalizer.js"></script>
 </body>
 
 </html>
